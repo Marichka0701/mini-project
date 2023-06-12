@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Post-details</title>
+</head>
+<style>
+    * {
+        box-sizing: border-box;
+    }
+    html, body {
+        padding: 0;
+        margin: 0;
+    }
+    body, html {
+        width: 100vw;
+        height: 100vh;
+    }
+    body {
+        width: 100vw;
+        height: 100vh;
+        overflow-x: hidden;
+        padding: 30px;
+    }
+  .info {
+      margin-bottom: 100px;
+      background: rgba(0,118,255,0.21);
+      padding: 20px;
+      border-radius: 20px;
+  }
+  .comment-block {
+      flex: 1;
+      background: rgba(255,156,0,0.21);
+      padding: 15px;
+      border-radius: 20px;
+  }
+  h1 {
+      margin-top: 0;
+  }
+  .comments-container {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-evenly;
+      gap: 20px;
+      flex-wrap: wrap;
+  }
+</style>
+<body>
+
+<div class="info">
+    <h1>Info about post:</h1>
+</div>
+
+<script>
+  // На странице post-details.html:
+  // 7 Вивести всю, без виключення, інформацію про об'єкт post на який клікнули .
+  // 8 Нижчє інформаці про пост, вивести всі коментарі поточного поста (ендпоінт  - https://jsonplaceholder.typicode.com/posts/POST_ID/comments)
+  // post-details.html - блок з інфою про пост зверху. Коментарі - по 4 в ряд.
+  const url = new URL(window.location.href);
+  let data = url.searchParams.get('data');
+
+  const userId = JSON.parse(data).userId;
+  const title = JSON.parse(data).title;
+  const postId = JSON.parse(data).id;
+
+
+  const infoContainer = document.getElementsByClassName('info')[0];
+  fetch(`https://jsonplaceholder.typicode.com/posts?userId=${userId}&&title=${title}`)
+  .then((response) => response.json())
+  .then((value) => {
+    for (const key in value[0]) {
+      const div = document.createElement('div');
+      div.innerHTML = `<b>${key}</b> - ${value[0][key]}`;
+      infoContainer.appendChild(div);
+    }
+  });
+
+  // comments block
+  fetch(`https://jsonplaceholder.typicode.com/posts/${postId}/comments`)
+  .then((response) => response.json())
+  .then((comments) => {
+    // console.log(value);
+    const container = document.createElement('div');
+    container.classList.add('comments-container');
+    for (const comment of comments) {
+      const commentContainer = document.createElement('div');
+      commentContainer.classList.add('comment-block');
+      for (const key in comment) {
+        const div = document.createElement('div');
+        div.innerHTML += `<b>${key}</b> - ${comment[key]}`;
+        commentContainer.appendChild(div);
+      }
+      container.append(commentContainer, document.createElement('br'));
+    }
+    document.body.appendChild(container);
+  })
+</script>
+
+</body>
+</html>
